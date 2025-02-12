@@ -30,3 +30,15 @@ def check_email_format(email):
     # validates the email format using regex
     pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
     return bool (re.match(pattern, email))
+def dectect_issues(df):
+    # checks if the dataset has some common issues and report them
+    print("\n **Dataset Overview**")
+    print(df.info())
+    
+    print("\n **Missing Values")
+    print(df.isnull().sum())
+    
+    print("\n **Duplicate Rows**")
+    print(f"The total number of duplicates is:{df.duplicated().sum()}")
+    
+    print("\n ****")    
