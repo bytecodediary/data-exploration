@@ -23,7 +23,7 @@ def load_dataset(file_path):
         
     except Exception as e:
         print(f"An Error Occurred While Loading the Dataset:{e}")
-        return none
+        return None
     
 # function to check the whole dataset thoroughly to find any inconsistency 
 def check_email_format(email):
