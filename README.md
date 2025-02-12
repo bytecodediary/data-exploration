@@ -1,6 +1,6 @@
 # Data exploration
 
-This is a repository showing the data exporation techniquesthat we as a team are exploring to make the data anaysis and manipulation and easier task
+This is a repository showing the data exporation techniques that we as a team are exploring to make the data anaysis and manipulation and easier task.
 
 ## Table of Contents
 
