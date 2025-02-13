@@ -1,6 +1,7 @@
 import pandas as pd 
 import json
 import re
+import langdetect
 import nltk
 from nltk.tokenize import word_tokenize, sent_tokenize
 from langdetect import detect, DetectorFactory
@@ -38,6 +39,10 @@ def load_dataset(file_path):
     except Exception as e:
         print(f"OOHH! NOO! There was An Error Loading the Dataset:{e}")
         return None
+    
+    # data loading
+    dataset = load_dataset(file_path)
+    dataset.head()
     
 # function to check the whole dataset thoroughly to find any inconsistency 
 def check_email_format(email):
@@ -139,6 +144,21 @@ def detect_language_dataset(df):
     for col in df.select_types(include  =['object']).columns:
         spaces = df[col].str.startswith("")| df[col].str.endswith("")
         print(f"Column'{col}': {spaces.sum()} rows with extra spaces")
+        
+        
+        
+        
+        
+# data_clean/explore.py
+def list_common_errors(dataset):
+    errors = []
+    # Example error checks
+    if dataset.isnull().sum().sum() > 0:
+        errors.append("Missing values")
+    if dataset.duplicated().any():
+        errors.append("Duplicate rows")
+    # Add more checks as required
+    return errors
 
 
 def main (file_path):
