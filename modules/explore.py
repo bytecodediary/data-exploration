@@ -6,6 +6,13 @@ from nltk.tokenize import word_tokenize, sent_tokenize
 from langdetect import detect, DetectorFactory
 from langdetect.lang_detect_exception import LangDetectException
 
+
+#  Making the landuage detector deterministic
+DetectorFactory.seed = 0
+
+# download the nltk resources if not available
+nltk.download('punkt')
+
 # this code reads the following datasets: .csv, .json, .txt, .xlsx/xls
 def load_dataset(file_path):
     # loads the dataset based on its file type
