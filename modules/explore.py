@@ -14,51 +14,105 @@ DetectorFactory.seed = 0
 # download the nltk resources if not available
 nltk.download('punkt')
 
-# this code reads the following datasets: .csv, .json, .txt, .xlsx/xls
-def load_dataset(file_path):
-    # loads the dataset based on its file type
+import pandas as pd
+import json
+import re
+from langdetect import detect
+
+
+class Explore():
+# Function to load different types of datasets
+  def load_dataset(file_path):
+    """Loads the dataset based on its file type."""
     try:
         if file_path.endswith('.csv'):
             return pd.read_csv(file_path)
         elif file_path.endswith('.json'):
-            with open(file_path, 'r', encoding = 'utf-8') as f:
+            with open(file_path, 'r', encoding='utf-8') as f:
                 data = json.load(f)
             return pd.DataFrame(data)
         elif file_path.endswith('.txt'):
-            return pd.read_csv(file_path, delimiter="\t", sep=' ', header=None, names=['Text'])
+            with open(file_path, 'r', encoding='utf-8') as f:
+                return pd.DataFrame({'Text': f.readlines()})  # Read lines into a DataFrame
         elif file_path.endswith('.tsv'):
             return pd.read_csv(file_path, sep='\t', header=None)
-        elif file_path.endswith('xlsx') or file_path.endswith('xls'):
+        elif file_path.endswith('.xlsx') or file_path.endswith('.xls'):
             return pd.read_excel(file_path)
-            # tokenize_dataset(df)
-            # standardize_dataset(df)
-            # detect_language_dataset(df)
         else:
-            raise ValueError("SORRY! You Provided Unsupported file format.")
-        
-    except Exception as e:
-        print(f"OOHH! NOO! There was An Error Loading the Dataset:{e}")
-        return None
+            raise ValueError("SORRY! You Provided an Unsupported File Format.")
     
-    # data loading
-load_dataset(file_path)
-
-# function to check the whole dataset thoroughly to find any inconsistency 
-def check_email_format(email):
-    # validates the email format using regex
-        pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
-        return bool (re.match(pattern, email))
-check_email_format(email)
-
-
-    # this will detect the language of any given dataset
-def detect_language(text):
-    try:
-        lang = langdetect.detect(text)
-        return lang
     except Exception as e:
-        print(f"Error Occurring in Detecting Language: {e}")
-    detect_language (text)
+        print(f"OOHH! NOO! There was an Error Loading the Dataset: {e}")
+        return None
+
+# Function to validate email format using regex
+def check_email_format(email):
+    """Validates the email format using regex."""
+    pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+    return bool(re.match(pattern, email))
+
+# Function to detect language of text
+def detect_language(text):
+    """Detects the language of a given text."""
+    try:
+        return detect(text)
+    except Exception as e:
+        print(f"Error Occurred in Detecting Language: {e}")
+        return None
+
+# Example usage
+file_path = "example.csv"  # Replace with your dataset file
+dataset = load_dataset(file_path)
+
+if dataset is not None:
+    print(dataset.head()) 
+    # Print first few rows of dataset
+# email = "example@example.com"
+# # this code reads the following datasets: .csv, .json, .txt, .xlsx/xls
+# def load_dataset(file_path):
+#     # loads the dataset based on its file type
+#     try:
+#         if file_path.endswith('.csv'):
+#             return pd.read_csv(file_path)
+#         elif file_path.endswith('.json'):
+#             with open(file_path, 'r', encoding = 'utf-8') as f:
+#                 data = json.load(f)
+#             return pd.DataFrame(data)
+#         elif file_path.endswith('.txt'):
+#             return pd.read_csv(file_path, delimiter="\t", sep=' ', header=None, names=['Text'])
+#         elif file_path.endswith('.tsv'):
+#             return pd.read_csv(file_path, sep='\t', header=None)
+#         elif file_path.endswith('xlsx') or file_path.endswith('xls'):
+#             return pd.read_excel(file_path)
+#             # tokenize_dataset(df)
+#             # standardize_dataset(df)
+#             # detect_language_dataset(df)
+#         else:
+#             raise ValueError("SORRY! You Provided Unsupported file format.")
+        
+#     except Exception as e:
+#         print(f"OOHH! NOO! There was An Error Loading the Dataset:{e}")
+#         return None
+    
+#     # data loading
+# load_dataset(file_path)
+
+# # function to check the whole dataset thoroughly to find any inconsistency 
+# def check_email_format(email):
+#     # validates the email format using regex
+#         pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+#         return bool (re.match(pattern, email))
+# check_email_format(email)
+
+
+#     # this will detect the language of any given dataset
+# def detect_language(text):
+#     try:
+#         lang = langdetect.detect(text)
+#         return lang
+#     except Exception as e:
+#         print(f"Error Occurring in Detecting Language: {e}")
+#     detect_language (text)
         
         
 def detect_issues(df):
