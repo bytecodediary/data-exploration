@@ -8,7 +8,7 @@ from langdetect import detect, DetectorFactory
 from langdetect.lang_detect_exception import LangDetectException
 
 
-#  Making the landuage detector deterministic
+#  Making the language detector deterministic
 DetectorFactory.seed = 0
 
 # download the nltk resources if not available
@@ -41,52 +41,61 @@ def load_dataset(file_path):
         return None
     
     # data loading
-    dataset = load_dataset(file_path)
-    dataset.head()
-    
+load_dataset(file_path)
+
 # function to check the whole dataset thoroughly to find any inconsistency 
 def check_email_format(email):
     # validates the email format using regex
-    pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
-    return bool (re.match(pattern, email))
+        pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+        return bool (re.match(pattern, email))
+check_email_format(email)
 
-def detect_language(text):
+
     # this will detect the language of any given dataset
+def detect_language(text):
     try:
         lang = langdetect.detect(text)
         return lang
     except Exception as e:
-        print(f"Error Occuring in Detecting Language: {e}")
+        print(f"Error Occurring in Detecting Language: {e}")
+    detect_language (text)
         
         
 def detect_issues(df):
     # checks if the dataset has some common issues and report them
-    print("\n **Dataset Overview**")
-    print(df.info())
+       print("\n **Dataset Overview**")
+       print(df.info())
     
-    print("\n **Missing Values")
-    print(df.isnull().sum())
+       print("\n **Missing Values")
+       print(df.isnull().sum())
     
-    print("\n **Duplicate Rows**")
-    print(f"The total number of duplicates is:{df.duplicated().sum()}")
+       print("\n **Duplicate Rows**")
+       print(f"The total number of duplicates is:{df.duplicated().sum()}")
     
-    print("\n **Inconsistent Datatypes**")
-    print(df.types)
+       print("\n **Inconsistent Datatypes**")
+       print(df.dtypes)
+    
+       detect_issues(df)
+
     
     
-    # checking for outliers 
+# checking for outliers 
+def detect_outliers(df):
     print("\n Checking for the outliers in the Dataset")
     for col in df.select_dtype(include=['number'].columns):
             outliers = df[df[col]]<df[col].quantile(0.05) | df[col]>df[col].quantile(0.95)
             print (f"Outliers in '{col}': {len(outliers.sum())}")
+    detect_outliers(df)
+    
+    def check_email(df):
             
     # checking for inconsistent email format
-    print("\n **Incorrect Email Format**")
+      print("\n **Incorrect Email Format**")
     if any(df.columns.str.contains("email", case=False)):
         email_col = df.loc[:, df.columns.str.contains("email", case=False)].columns[0]
         invalid_emails = df[df[email_col].astype(str).apply(lambda x: not check_email_format(x))]
         print (f"Number of emails with incorrect format in '{email_col}': {len(invalid_emails)}")
-        
+    check_email(df)
     # end of email check
             
 
@@ -101,7 +110,7 @@ def tokenize_dataset(df):
             sentences = sent_tokenize(text)
             print (f"Row{i} -words: {words}")
             print (f"Row{i} -sentences: {sentences}")
-            
+    tokenize_dataset(df)        
         
 # Standardization of the dataset
 
@@ -114,7 +123,7 @@ def standardize_dataset(df):
         # Special characters
         special_chars = df[col].apply(lambda x: bool(re.search(r'[^a-zA-Z0-9\s]', str(x))) if isinstance(x, str) else False)
         print(f"Column'{col}'{special_chars.sum() }rows with special characters")
-        
+    standardize_dataset(df)   
     # end of Standardization of the dataset
     
     
@@ -127,24 +136,27 @@ def detect_language_dataset(df):
         for i, text in enumerate(df[col].dropna().head(5), 1):
             lang = detect_language_dataset(text)
             print(f"Row{i} - Detected Language: {lang}")
-        
+    detect_language_dataset(df)    
 # End of language detect
 
 
     # checking for invalid IDs (Non Numeric or Too Short)
+    def check_id(df):
+        
         print("\n Invalid IDs (Non Numeric or Too Short)")
     if any (df.columns.str.contains("id", case=False)):
         id_col=df.loc[:, df.columns.str.contains ("id", case=False)].columns[0]
         invalid_ids = df[~df[id_col].astype(str).str.isdigit() | (df[id_col].str.len()<5)]
         print (f"Number of invalid IDs in '{id_col}': {len(invalid_ids)}")
-    
+    check_id(df)
     
     # formatting issues that leads to trailing spaces
-    print ("\n Formatting issues that leads to trailing spaces")
+    def format_issues(df):
+        print ("\n Formatting issues that leads to trailing spaces")
     for col in df.select_types(include  =['object']).columns:
         spaces = df[col].str.startswith("")| df[col].str.endswith("")
         print(f"Column'{col}': {spaces.sum()} rows with extra spaces")
-        
+    format_issues(df)  
         
         
         
@@ -169,6 +181,6 @@ def main (file_path):
     else:
         print("Error: unable to load the dataset")
         return None
-    
+    main (file_path)
     # example usage:
     # detect_issues("path_to_your_dataset.csv")
