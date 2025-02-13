@@ -13,7 +13,7 @@ def load_dataset(file_path):
                 data = json.load(f)
             return pd.DataFrame(data)
         elif file_path.endswith('.txt'):
-            return pd.read_csv(file_path, delimeter="\t", sep=' ', header=None, names=['Text'])
+            return pd.read_csv(file_path, delimiter="\t", sep=' ', header=None, names=['Text'])
         elif file_path.endswith('.tsv'):
             return pd.read_csv(file_path, sep='\t', header=None)
         elif file_path.endswith('xlsx') or file_path.endswith('xls'):
@@ -41,4 +41,47 @@ def dectect_issues(df):
     print("\n **Duplicate Rows**")
     print(f"The total number of duplicates is:{df.duplicated().sum()}")
     
-    print("\n ****")    
+    print("\n **Inconsistent Datatypes**")
+    print(df.types)
+    
+    
+        # checking for outliers 
+    print("\n Checking for the outliers in the Dataset")
+    for col in df.select_dtypes(include=['number'].columns):
+            outliers = df[df[col]]<df[col].quantile(0.05) | df[col]>df[col].quantile(0.95)
+            print (f"Outliers in '{col}': {len(outliers.sum())}")
+            
+    # checking for inconsistent email format
+    print("\n **Incorrect Email Format**")
+    if any(df.columns.str.contains("email", case=False)):
+        email_col = df.loc[:, df.columns.str.contains("email", case=False)].columns[0]
+        invalid_emails = df [~df[email_col].astype(str).apply(check_email_format)]
+        print(f"Number of invalid emails in '{email_col}': {len(invalid_emails)}")
+        
+    
+    # checking for invalid IDs (Non Numeric or Too Short)
+    
+    print("\n Invalid IDs (Non Numeric or Too Short)")
+    if any (df.columns.str.contains("id", case=False)):
+        id_col=df.loc[:, df.columns.str.contains ("id", case=False)].columns[0]
+        invalid_ids = df[~df[id_col].astype(str).str.isdigit() | (df[id_col].str.len()<5)]
+        print (f"Number of invalid IDs in '{id_col}': {len(invalid_ids)}")
+    
+    
+    # formatting issues that leads to trailing spaces
+    for col in df.select_types(include  =['object']).columns:
+        spaces = df[col].str.startswith("")| df[col].str.endswith("")
+        print(f"Column'{col}': {spaces.sum()} rows with extra spaces")
+
+
+def main (file_path):
+    df = load_dataset(file_path)
+    if df is not None:  
+        detect_issues(df)
+
+    else:
+        print("Error: unable to load the dataset")
+        return None
+    
+    # example usage:
+    # detect_issues("path_to_your_dataset.csv")
